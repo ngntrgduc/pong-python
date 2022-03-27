@@ -5,30 +5,29 @@ import time
 window = turtle.Screen()
 window.title("Pong")
 window.bgcolor("black")
-window.setup(width=1000, height=600)
+window.setup(width=600, height=400)
 window.tracer(0)
 
 # Score
-score_a = 0
-score_b = 0
+lose = 0
 
-# Paddle A
-paddle_a = turtle.Turtle()
-paddle_a.speed(0)
-paddle_a.shape("square")
-paddle_a.color("white")
-paddle_a.shapesize(stretch_wid=5,stretch_len=1)
-paddle_a.penup()
-paddle_a.goto(-450, 0)
+# Paddle AI
+paddle_AI = turtle.Turtle()
+paddle_AI.speed(0)
+paddle_AI.shape("square")
+paddle_AI.color("white")
+# paddle_AI.shapesize(stretch_wid=5,stretch_len=1)
+paddle_AI.penup()
+paddle_AI.goto(-250, 0)
 
-# Paddle B
-paddle_b = turtle.Turtle()
-paddle_b.speed(0)
-paddle_b.shape("square")
-paddle_b.color("white")
-paddle_b.shapesize(stretch_wid=5,stretch_len=1)
-paddle_b.penup()
-paddle_b.goto(450, 0)
+# Paddle Player
+paddle_player = turtle.Turtle()
+paddle_player.speed(0)
+paddle_player.shape("square")
+paddle_player.color("white")
+paddle_player.shapesize(stretch_wid=5,stretch_len=1)
+paddle_player.penup()
+paddle_player.goto(250, 0)
 
 # Ball
 ball = turtle.Turtle()
@@ -47,36 +46,36 @@ pen.shape("square")
 pen.color("white")
 pen.penup()
 pen.hideturtle()
-pen.goto(0, 260)
-pen.write("Player A: {} | Player B: {}".format(score_a, score_b), align="center", font=("Calibri", 24, "normal"))
+pen.goto(0, 160)
+pen.write("You lose : {}".format(lose), align="center", font=("Calibri", 24, "normal"))
 
 # Functions
-def paddle_a_up():
-    y = paddle_a.ycor()
-    y += 40
-    paddle_a.sety(y)
+def paddle_AI_up():
+    y = paddle_AI.ycor()
+    y += 5
+    paddle_AI.sety(y)
 
-def paddle_a_down():
-    y = paddle_a.ycor()
-    y -= 40
-    paddle_a.sety(y)
+def paddle_AI_down():
+    y = paddle_AI.ycor()
+    y -= 5
+    paddle_AI.sety(y)
 
-def paddle_b_up():
-    y = paddle_b.ycor()
-    y += 40
-    paddle_b.sety(y)
+def paddle_player_up():
+    if paddle_player.ycor() < 150:
+        y = paddle_player.ycor()
+        y += 5
+        paddle_player.sety(y)
 
-def paddle_b_down():
-    y = paddle_b.ycor()
-    y -= 40
-    paddle_b.sety(y)
+def paddle_player_down():
+    if paddle_player.ycor() > -140:
+        y = paddle_player.ycor()
+        y -= 5
+        paddle_player.sety(y)
 
 # Keyboard bindings
 window.listen()
-window.onkeypress(paddle_a_up, "f")
-window.onkeypress(paddle_a_down, "v")
-window.onkeypress(paddle_b_up, "Up")
-window.onkeypress(paddle_b_down, "Down")
+window.onkeypress(paddle_player_up, "Up")
+window.onkeypress(paddle_player_down, "Down")
 
 # Main game loop
 while True:
@@ -89,36 +88,42 @@ while True:
 
     # Border checking
     # Top and bottom
-    if ball.ycor() > 290:
-        ball.sety(290)
+    if ball.ycor() > 190:
+        ball.sety(190)
         winsound.PlaySound("bounce.wav", winsound.SND_ASYNC)
         ball.dy *= -1
         
-    elif ball.ycor() < -290:
-        ball.sety(-290)
+    elif ball.ycor() < -190:
+        ball.sety(-190)
         winsound.PlaySound("bounce.wav", winsound.SND_ASYNC)
         ball.dy *= -1
 
     # Left and right
-    if ball.xcor() > 450:
-        score_a += 1
+    if ball.xcor() > 250:
+        lose += 1
         pen.clear()
-        pen.write("Player A: {} | Player B: {}".format(score_a, score_b), align="center", font=("Calibri", 24, "normal"))
+        pen.write("You lose : {}".format(lose), align="center", font=("Calibri", 24, "normal"))
         ball.goto(0, 0)
         ball.dx *= -1
 
-    elif ball.xcor() < -450:
-        score_b += 1
+    elif ball.xcor() < -250:
         pen.clear()
-        pen.write("Player A: {} | Player B: {}".format(score_a, score_b), align="center", font=("Calibri", 24, "normal"))
-        ball.goto(0, 0)
-        ball.dx *= -1
+        pen.write("You win =)))", align="center", font=("Calibri", 24, "normal"))
+        time.sleep(3)
+        break;
 
     # Paddle and ball collisions
-    if (ball.xcor() < -430 and ball.xcor() > -450) and ball.ycor() < paddle_a.ycor() + 50 and ball.ycor() > paddle_a.ycor() - 50:
+    if (ball.xcor() <= -230 and ball.xcor() >= -250) and ball.ycor() < paddle_AI.ycor() + 50 and ball.ycor() > paddle_AI.ycor() - 50:
         winsound.PlaySound("bounce.wav", winsound.SND_ASYNC)
         ball.dx *= -1 
     
-    elif (ball.xcor() > 430 and ball.xcor() < 450) and ball.ycor() < paddle_b.ycor() + 50 and ball.ycor() > paddle_b.ycor() - 50:
+    elif (ball.xcor() >= 230 and ball.xcor() <= 250) and ball.ycor() < paddle_player.ycor() + 50 and ball.ycor() > paddle_player.ycor() - 50:
         winsound.PlaySound("bounce.wav", winsound.SND_ASYNC)
         ball.dx *= -1
+
+    # AI player
+    if paddle_AI.ycor() < ball.ycor() and (abs(paddle_AI.ycor() - ball.ycor()) > 20):
+        paddle_AI_up()
+
+    elif paddle_AI.ycor() > ball.ycor() and (abs(paddle_AI.ycor() - ball.ycor()) > 20):
+        paddle_AI_down()
