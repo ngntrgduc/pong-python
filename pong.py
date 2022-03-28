@@ -6,7 +6,7 @@ window = turtle.Screen()
 window.title("Pong")
 window.bgcolor("black")
 window.setup(width=600, height=400)
-window.tracer(0)
+window.tracer(0, 0)
 
 # Score
 lose = 0
@@ -81,7 +81,7 @@ window.onkeypress(paddle_player_down, "Down")
 while True:
     window.update()
     time.sleep(0.00001)
-    
+
     # Move the ball
     ball.setx(ball.xcor() + ball.dx)
     ball.sety(ball.ycor() + ball.dy)
